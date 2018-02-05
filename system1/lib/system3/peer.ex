@@ -14,22 +14,6 @@ defmodule System3.Peer do
   end
 end
 
-defmodule BEB do
-  def run(peers, pl, app \\ {}) do
-    receive do
-      {:bind_app, app} -> run(peers, pl, app)
-      {:beb_broadcast, msg} ->
-        for p <- peers do
-          send pl, {:pl_send, msg, p}
-        end
-        run(peers, pl, app)
-      {:pl_deliver, msg} ->
-        send app, {:beb_deliver, msg}
-        run(peers, pl, app)
-    end
-  end
-end
-
 defmodule System3.App do
 
   def init(id, system, beb, n_peers, max_broadcast, timeout) do

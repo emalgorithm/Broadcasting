@@ -11,21 +11,6 @@ defmodule System2.Peer do
   end
 end
 
-defmodule PerfectLink do
-  def run(app \\ {}, links \\ []) do
-    receive do
-      {:bind_links, links} -> run(app, links)
-      {:bind_app, app} -> run(app, links)
-      {:pl_send, msg, dest} ->
-        send Enum.at(links, dest), msg
-        run(app, links)
-      msg ->
-        send app, {:pl_deliver, msg}
-        run(app, links)
-    end
-  end
-end
-
 defmodule App do
   def init(id, system, pl, n_peers, max_broadcast, timeout) do
     app_id = self()
