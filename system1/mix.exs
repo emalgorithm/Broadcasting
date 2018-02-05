@@ -3,10 +3,11 @@ defmodule System1.MixProject do
 
   def project do
     [
-      app: :system1,
+      app: :broadcast_cli,
       version: "0.1.0",
-      elixir: "~> 1.6",
+      elixir: "~> 1.5.2",
       start_permanent: Mix.env() == :prod,
+      escript: [main_module: CLI],
       deps: deps()
     ]
   end
