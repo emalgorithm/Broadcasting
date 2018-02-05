@@ -2,7 +2,7 @@ defmodule System4.Peer do
   def run(system, peer_index, n_peers, max_broadcast, timeout) do
     peers = 0..n_peers-1
     reliability = 50
-    pl = spawn LossyLink, :run, [peer_index, reliability]
+    pl = spawn LossyLink, :run, [reliability]
     beb = spawn BEB, :run, [peers, pl]
     send system, {peer_index, pl}
     receive do
