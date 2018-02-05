@@ -44,7 +44,7 @@ defmodule CLI do
     max_messages = opts[:max_messages] || 1000
     n_peers = opts[:n_peers] || 5
     timeout = opts[:timeout] || 3000
-    network = opts[:network] || false
+    #  network = opts[:network] || false
 
     IO.puts """
     Starting System 1 with arguments
@@ -57,6 +57,9 @@ defmodule CLI do
       1 -> System1.main(max_messages, n_peers, timeout)
       2 -> System2.main(max_messages, n_peers, timeout)
       3 -> System3.main(max_messages, n_peers, timeout)
+      4 -> System4.main(max_messages, n_peers, timeout)
+      5 -> System5.main(max_messages, n_peers, timeout)
+      6 -> System6.main(max_messages, n_peers, timeout)
     end
   end
 end
