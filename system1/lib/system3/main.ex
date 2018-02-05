@@ -1,7 +1,7 @@
 defmodule System3 do
   def main(max_broadcast \\ 1000, n_peers \\ 5, timeout \\ 3000) do
     peer_ids = for i <- 0..n_peers-1 do
-      spawn System3.Peer, :run, [self(), i, n_peers, max_broadcast]
+      spawn System3.Peer, :run, [self(), i, n_peers, max_broadcast, timeout]
     end
 
     pl_ids = for i <- 0..n_peers-1 do
@@ -16,13 +16,6 @@ defmodule System3 do
 
     for p <- peer_ids do
       send p, {:ready}
-    end
-
-    receive do
-    after timeout ->
-      for pl <- pl_ids do
-        send pl, {:stop, self()}
-      end
     end
 
     listen(n_peers, 0)
