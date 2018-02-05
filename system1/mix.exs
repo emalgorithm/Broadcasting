@@ -5,7 +5,7 @@ defmodule System1.MixProject do
     [
       app: :broadcast_cli,
       version: "0.1.0",
-      elixir: "~> 1.5.2",
+      elixir: "~> 1.6.0",
       start_permanent: Mix.env() == :prod,
       escript: [main_module: CLI],
       deps: deps()

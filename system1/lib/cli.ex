@@ -56,6 +56,7 @@ defmodule CLI do
     case n do
       1 -> System1.main(max_messages, n_peers, timeout)
       2 -> System2.main(max_messages, n_peers, timeout)
+      3 -> System3.main(max_messages, n_peers, timeout)
     end
   end
 end
