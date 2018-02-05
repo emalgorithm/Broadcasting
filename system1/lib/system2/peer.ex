@@ -1,6 +1,6 @@
 defmodule System2.Peer do
   def run(system, peer_index, n_peers, max_broadcast, timeout) do
-    pl = spawn PerfectLink, :run, [peer_index]
+    pl = spawn PerfectLink, :run, []
     send system, {peer_index, pl}
     receive do
       {:ready} ->
@@ -12,16 +12,16 @@ defmodule System2.Peer do
 end
 
 defmodule PerfectLink do
-  def run(id, app \\ {}, links \\ []) do
+  def run(app \\ {}, links \\ []) do
     receive do
-      {:bind_links, links} -> run(id, app, links)
-      {:bind_app, app} -> run(id, app, links)
+      {:bind_links, links} -> run(app, links)
+      {:bind_app, app} -> run(app, links)
       {:pl_send, msg, dest} ->
-        send Enum.at(links, dest), {msg, id}
-        run(id, app, links)
-      {msg, from} ->
-        send app, {:pl_deliver, msg, from}
-        run(id, app, links)
+        send Enum.at(links, dest), msg
+        run(app, links)
+      msg ->
+        send app, {:pl_deliver, msg}
+        run(app, links)
     end
   end
 end
@@ -38,7 +38,7 @@ defmodule App do
   # Max broadcasts reached
   def run(id, system, pl, peers, received_status, sent_status, 0) do
     receive do
-      {:pl_deliver, _, from} -> run(id, system, pl, peers,
+      {:pl_deliver, from} -> run(id, system, pl, peers,
         List.update_at(received_status, from, &(&1 + 1)), sent_status, 0)
       {:stop} -> send system, {:done, id, sent_status, received_status}
     end
@@ -46,12 +46,13 @@ defmodule App do
 
   def run(id, system, pl, peers, received_status, sent_status, broadcast_left) do
     receive do
-      {:pl_deliver, _, from} -> run(id, system, pl, peers,
+      {:pl_deliver, {from, _}} -> run(id, system, pl, peers,
         List.update_at(received_status, from, &(&1 + 1)), sent_status, broadcast_left)
       {:stop} -> send system, {:done, id, sent_status, received_status}
       after 0 ->
         for p <- peers do
-          send pl, {:pl_send, 0, p}
+          # We need to send id in order to update the received statistics
+          send pl, {:pl_send, {id, "hello"}, p}
         end
         run(id, system, pl, peers, received_status, Enum.map(sent_status, &(&1 + 1)), broadcast_left - 1)
     end
