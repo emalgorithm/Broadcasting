@@ -38,7 +38,7 @@ defmodule App do
   # Max broadcasts reached
   def run(id, system, pl, peers, received_status, sent_status, 0) do
     receive do
-      {:pl_deliver, from} -> run(id, system, pl, peers,
+      {:pl_deliver, {from, _}} -> run(id, system, pl, peers,
         List.update_at(received_status, from, &(&1 + 1)), sent_status, 0)
       {:stop} -> send system, {:done, id, sent_status, received_status}
     end
