@@ -53,13 +53,28 @@ defmodule CLI do
       timeout: #{timeout}
     """
 
-    case n do
-      1 -> System1.main(max_messages, n_peers, timeout)
-      2 -> System2.main(max_messages, n_peers, timeout)
-      3 -> System3.main(max_messages, n_peers, timeout)
-      4 -> System4.main(max_messages, n_peers, timeout)
-      5 -> System5.main(max_messages, n_peers, timeout)
-      6 -> System6.main(max_messages, n_peers, timeout)
+    peer_module = case n do
+      1 -> System1.Peer
+      2 -> System2.Peer
+      3 -> System3.Peer
+      4 -> System4.Peer
+      5 -> System5.Peer
+      6 -> System6.Peer
+    end
+
+    if n == 1 do
+      peers =
+        for i <- 0..n_peers, do: spawn(Peer, :start, [self(), i])
+      System1.main(peers, max_messages, n_peers, timeout)
+    else
+      peer_ids = spawn_peers(peer_module, n_peers, max_messages, timeout)
+      BroadcastSystem.main(peer_ids, n_peers, timeout)
+    end
+  end
+
+  def spawn_peers(peer_module, n_peers, max_messages, timeout) do
+    for i <- 0..n_peers-1 do
+      spawn peer_module, :run, [self(), i, n_peers, max_messages, timeout]
     end
   end
 end

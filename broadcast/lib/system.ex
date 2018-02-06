@@ -1,9 +1,5 @@
-defmodule System6 do
-  def main(max_broadcast \\ 1000, n_peers \\ 5, timeout \\ 3000) do
-    peer_ids = for i <- 0..n_peers-1 do
-      spawn System6.Peer, :run, [self(), i, n_peers, max_broadcast, timeout]
-    end
-
+defmodule BroadcastSystem do
+  def main(peer_ids, n_peers \\ 5, timeout \\ 3000) do
     pl_ids = for i <- 0..n_peers-1 do
       receive do
         {^i, pl} -> pl
@@ -28,5 +24,7 @@ defmodule System6 do
         after 100 -> IO.puts("No reply from process #{i} in 100ms")
       end
     end
+
   end
+
 end

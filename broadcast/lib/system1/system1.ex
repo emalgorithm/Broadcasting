@@ -1,11 +1,8 @@
 defmodule System1 do
-  def main(max_broadcast \\ 1000, num_of_peers \\ 5, timeout \\ 3000) do
+  def main(peers, max_broadcast \\ 1000, num_of_peers \\ 5, timeout \\ 3000) do
     #
     # peers =
     #     for i <- 0..num_of_peers, do: Node.spawn(:'node#{i+1}@container#{i+1}.localdomain', Peer, :start, [self(), i])
-
-    peers =
-    for i <- 0..num_of_peers, do: spawn(Peer, :start, [self(), i])
 
 
     for peer <- peers, do: send peer, {:neighbours, peers}
