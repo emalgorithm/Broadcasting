@@ -62,19 +62,17 @@ defmodule CLI do
       6 -> System6.Peer
     end
 
+    peer_ids = spawn_peers(peer_module, n_peers)
     if n == 1 do
-      peers =
-        for i <- 0..n_peers, do: spawn(Peer, :start, [self(), i])
-      System1.main(peers, max_messages, n_peers, timeout)
+      System1.main(peer_ids, max_messages, n_peers, timeout)
     else
-      peer_ids = spawn_peers(peer_module, n_peers, max_messages, timeout)
-      BroadcastSystem.main(peer_ids, n_peers, timeout)
+      BroadcastSystem.main(peer_ids, max_messages, n_peers, timeout)
     end
   end
 
-  def spawn_peers(peer_module, n_peers, max_messages, timeout) do
+  def spawn_peers(peer_module, n_peers) do
     for i <- 0..n_peers-1 do
-      spawn peer_module, :run, [self(), i, n_peers, max_messages, timeout]
+      spawn peer_module, :run, [self(), i]
     end
   end
 end

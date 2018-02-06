@@ -1,9 +1,9 @@
 defmodule System2.Peer do
-  def run(system, peer_index, n_peers, max_broadcast, timeout) do
+  def run(system, peer_index) do
     pl = spawn PerfectLink, :run, []
     send system, {peer_index, pl}
     receive do
-      {:ready} ->
+      {:ready, max_broadcast, n_peers, timeout} ->
         app = spawn App, :init,
           [peer_index, system, pl, n_peers, max_broadcast, timeout]
         send pl, {:bind_app, app}

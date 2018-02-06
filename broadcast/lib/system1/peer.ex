@@ -1,5 +1,5 @@
-defmodule Peer do
-	def start(system, peer_index) do
+defmodule System1.Peer do
+	def run(system, peer_index) do
 		receive do
 			{:neighbours, neighbours} -> 
 				listen(system, peer_index, neighbours)

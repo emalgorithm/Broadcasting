@@ -1,17 +1,16 @@
 defmodule System6.Peer do
-  def run(system, peer_index, n_peers, max_broadcast, timeout) do
-    peers = 0..n_peers-1
+  def run(system, peer_index) do
     reliability = 50
     pl = spawn LossyLink, :run, [reliability]
-    beb = spawn BEB, :run, [peers, pl]
-    rb = spawn RB, :run, [peers, beb]
+    beb = spawn BEB, :run, [pl]
+    rb = spawn RB, :run, [beb]
     send system, {peer_index, pl}
     receive do
-      {:ready} ->
+      {:ready, max_broadcast, n_peers, timeout} ->
         app = spawn System6.App, :init,
           [peer_index, system, rb, n_peers, max_broadcast, timeout]
         send rb, {:bind_app, app}
-        send beb, {:bind_app, rb}
+        send beb, {:bind_app, rb, 0..n_peers-1}
         send pl, {:bind_app, beb}
         if peer_index == 2 do
           receive do

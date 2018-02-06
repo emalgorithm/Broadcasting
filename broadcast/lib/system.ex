@@ -1,5 +1,5 @@
 defmodule BroadcastSystem do
-  def main(peer_ids, n_peers \\ 5, timeout \\ 3000) do
+  def main(peer_ids, max_broadcast \\ 1000, n_peers \\ 5, timeout \\ 3000) do
     pl_ids = for i <- 0..n_peers-1 do
       receive do
         {^i, pl} -> pl
@@ -11,7 +11,7 @@ defmodule BroadcastSystem do
     end
 
     for p <- peer_ids do
-      send p, {:ready}
+      send p, {:ready, max_broadcast, n_peers, timeout}
     end
 
     Process.sleep(timeout) 

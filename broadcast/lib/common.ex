@@ -14,17 +14,17 @@ defmodule PerfectLink do
 end
 
 defmodule BEB do
-  def run(peers, pl, app \\ {}) do
+  def run(pl, peers \\ [], app \\ {}) do
     receive do
-      {:bind_app, app} -> run(peers, pl, app)
+      {:bind_app, app, peers} -> run(pl, peers, app)
       {:beb_broadcast, msg} ->
         for p <- peers do
           send pl, {:pl_send, msg, p}
         end
-        run(peers, pl, app)
+        run(pl, peers, app)
       {:pl_deliver, msg} ->
         send app, {:beb_deliver, msg}
-        run(peers, pl, app)
+        run(pl, peers, app)
     end
   end
 end
@@ -47,19 +47,19 @@ defmodule LossyLink do
 end
 
 defmodule RB do
-  def run(peers, beb, app \\ {}, delivered \\ []) do
+  def run(beb, app \\ {}, delivered \\ []) do
     receive do
-      {:bind_app, app} -> run(peers, beb, app)
+      {:bind_app, app} -> run(beb, app)
       {:rb_broadcast, msg} ->
         send beb, {:beb_broadcast, msg}
-        run(peers, beb, app, delivered)
+        run(beb, app, delivered)
       {:beb_deliver, msg} ->
         if !Enum.member?(delivered, msg) do
           send beb, {:beb_broadcast, msg}
           send app, {:rb_deliver, msg}
-          run(peers, beb, app, [msg | delivered])
+          run(beb, app, [msg | delivered])
         else
-          run(peers, beb, app, delivered)
+          run(beb, app, delivered)
         end
     end
   end
