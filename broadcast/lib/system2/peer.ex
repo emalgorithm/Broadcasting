@@ -31,10 +31,13 @@ defmodule App do
 
   def run(id, system, pl, peers, received_status, sent_status, broadcast_left) do
     receive do
-      {:pl_deliver, {from, _}} -> run(id, system, pl, peers,
+      {:pl_deliver, {from, _}} -> 
+        # IO.puts("Received")
+        run(id, system, pl, peers,
         List.update_at(received_status, from, &(&1 + 1)), sent_status, broadcast_left)
       {:stop} -> send system, {:done, id, sent_status, received_status}
       after 0 ->
+        # IO.puts("Sent")
         for p <- peers do
           # We need to send id in order to update the received statistics
           send pl, {:pl_send, {id, "hello"}, p}

@@ -21,8 +21,8 @@ services:
   container0.localdomain:
     container_name: container0
     command: > 
-      elixir --name node0@container0.localdomain --cookie pass 
-             -S mix run --no-halt -e ${MAIN} 
+      elixir --name node1@container0.localdomain --cookie pass -pa /project
+             -S mix run -e "CLI.main System.argv" -- -s ${SYSTEM} -n ${N_PEERS} -m ${MAX_BROADCAST} -t ${TIMEOUT} --network
     depends_on:
       - container1.localdomain
       - container2.localdomain

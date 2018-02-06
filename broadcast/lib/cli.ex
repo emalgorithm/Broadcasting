@@ -44,13 +44,14 @@ defmodule CLI do
     max_messages = opts[:max_messages] || 1000
     n_peers = opts[:n_peers] || 5
     timeout = opts[:timeout] || 3000
-    #  network = opts[:network] || false
+    network = opts[:network] || false
 
     IO.puts """
-    Starting System 1 with arguments
+    Starting System #{n} with arguments
       max_messages: #{max_messages}
       n_peers: #{n_peers}
       timeout: #{timeout}
+      docker: #{network}
     """
 
     peer_module = case n do
@@ -61,8 +62,13 @@ defmodule CLI do
       5 -> System5.Peer
       6 -> System6.Peer
     end
+   
+    peer_ids = if network do
+      spawn_peers_network(peer_module, n_peers)
+    else
+      spawn_peers_local(peer_module, n_peers)
+    end
 
-    peer_ids = spawn_peers(peer_module, n_peers)
     if n == 1 do
       System1.main(peer_ids, max_messages, n_peers, timeout)
     else
@@ -70,9 +76,15 @@ defmodule CLI do
     end
   end
 
-  def spawn_peers(peer_module, n_peers) do
+  def spawn_peers_local(peer_module, n_peers) do
     for i <- 0..n_peers-1 do
       spawn peer_module, :run, [self(), i]
     end
+  end
+
+  def spawn_peers_network(peer_module, n_peers) do
+    for i <- 0..n_peers-1 do
+      Node.spawn(:'node#{i+1}@container#{i+1}.localdomain', peer_module, :run, [self(), i])
+    end 
   end
 end

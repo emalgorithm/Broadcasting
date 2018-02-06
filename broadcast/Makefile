@@ -2,10 +2,12 @@
 # distributed algorithms, n.dulay, 8 jan 18
 # Makefile, v1
 
-MAIN    = System1.main
 PROJECT = da347
 NETWORK = $(PROJECT)_network
-
+SYSTEM = 1
+N_PEERS = 5
+MAX_BROADCAST = 1000
+TIMEOUT = 3000
 COMPOSE = docker-compose -p $(PROJECT) 
 
 compile:
@@ -17,8 +19,8 @@ clean:
 build:	
 	$(COMPOSE) build
 
-up:	
-	MAIN=$(MAIN) $(COMPOSE) up 
+up:
+	SYSTEM=$(SYSTEM) N_PEERS=$(N_PEERS) MAX_BROADCAST=$(MAX_BROADCAST) TIMEOUT=$(TIMEOUT) $(COMPOSE) up 
 
 down:
 	$(COMPOSE) down

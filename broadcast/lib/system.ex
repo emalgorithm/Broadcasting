@@ -21,7 +21,7 @@ defmodule BroadcastSystem do
         {:done, ^i, sent_status, received_status} ->
           status = List.zip([sent_status, received_status])
           IO.puts("#{i}: #{inspect status}")
-        after 100 -> IO.puts("No reply from process #{i} in 100ms")
+        after 200 -> IO.puts("No reply from process #{i} in 200ms")
       end
     end
 
